@@ -8,11 +8,92 @@ public class Main {
 	public static void main(String[] args) throws Exception{
 		//insertNew();
 		//deleteCust();
-		viewDB();
-		updateCust();
-		viewDB();
+		//viewDB();
+		//updateCust();
+		//viewDB();
+		checkBill();
+		System.out.println("hii");
 
 }
+	
+	public static void checkBill() throws Exception {
+		Scanner scan = new Scanner(System.in);
+		Scanner scan1 = new Scanner(System.in);
+		Class.forName("com.mysql.cj.jdbc.Driver");
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/BillingDB","root","Ark@2037");
+		System.out.println("Press[1] - using Meter No\nPress[2] - using Customer Name\nPress[3] - using Mobile No");
+		int key = scan.nextInt();
+		
+		switch (key) {
+		case 1:{
+			System.out.println("Enter Meter No : ");
+			int no = scan.nextInt();
+			CallableStatement cst1 = con.prepareCall("{call fetchmeterno(?,?)}");
+			cst1.setInt(1,no);
+			cst1.registerOutParameter(2,Types.INTEGER);
+			cst1.execute();
+			if(cst1.getInt(2)==0) {
+				System.out.println("Invalid meter no");
+				break;
+			}
+			
+			CallableStatement cst = con.prepareCall("{call checkbillM(?,?)}");
+			cst.setInt(1,no);
+			cst.registerOutParameter(2,Types.FLOAT);
+			cst.execute();
+			System.out.println("Bill amount for Meter No "+no+" is : "+cst.getFloat(2)); 
+			con.close();
+			break;
+			
+		}
+		case 2: {
+			System.out.println("Enter Customer Name :");
+			String name = scan1.nextLine();
+			
+			CallableStatement cst1 = con.prepareCall("{call fetchCN(?,?)}");
+			cst1.setString(1,name);
+			cst1.registerOutParameter(2,Types.INTEGER);
+			cst1.execute();
+			if(cst1.getInt(2)==0) {
+				System.out.println("Invalid Customer Name");
+				break;
+			}
+			
+			CallableStatement cst = con.prepareCall("{call checkbillCN(?,?)}");
+			cst.setString(1,name);
+			cst.registerOutParameter(2,Types.FLOAT);
+			cst.execute();
+			System.out.println("Bill amount for Customer Name "+name+" is : "+cst.getFloat(2)); 
+			con.close();
+			break;
+		}
+		case 3: {
+			System.out.println("Enter Mobile No :");
+			Long mob = scan.nextLong();
+			
+			CallableStatement cst1 = con.prepareCall("{call fetchMN(?,?)}");
+			cst1.setLong(1,mob);
+			cst1.registerOutParameter(2,Types.INTEGER);
+			cst1.execute();
+			if(cst1.getInt(2)==0) {
+				System.out.println("Invalid Mobile No");
+				break;
+			}
+			
+			CallableStatement cst = con.prepareCall("{call checkbillMN(?,?)}");
+			cst.setLong(1,mob);
+			cst.registerOutParameter(2,Types.FLOAT);
+			cst.execute();
+			System.out.println("Bill amount for Customer with Mobile No "+mob+" is : "+cst.getFloat(2)); 
+			con.close();
+			break;
+		}
+		
+		default:
+			System.out.println(key + " is Invalid input");
+		}
+		
+	}
 	public static void updateCust() throws Exception{
 		Scanner scan = new Scanner(System.in);
 		Scanner scan1 = new Scanner(System.in);
@@ -22,6 +103,7 @@ public class Main {
 		
 		System.out.println("Which detail you want to update");
 		System.out.println("Press[1] - Customer Name \nPress[2] - Mobile No\nPress[3] - Connection Date");
+		
 		int key = scan.nextInt();
 		
 		
