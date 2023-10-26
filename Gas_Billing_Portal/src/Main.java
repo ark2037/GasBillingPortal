@@ -12,7 +12,7 @@ public class Main {
 		//updateCust();
 		//viewDB();
 		checkBill();
-		System.out.println("hii");
+		System.out.println("hello");
 
 }
 	
